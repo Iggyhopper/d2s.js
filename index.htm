@@ -1,0 +1,70 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    
+        <title>Diablo II Save File Reader</title>
+        <style type="text/css">
+            #banner { border: 1px solid black; margin: 0 auto; text-align: center; width: 250px; }
+            #browser { margin: 0 auto; text-align: center; width: 450px; }
+            #viewer { height: auto; margin: 0 auto; overflow: auto; }
+            td { text-align: center; }
+            td:first-child { vertical-align: top; }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+        <script src="d2s.js" type="text/javascript"></script>
+        <script src="BinaryReader.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            $().ready(function()
+            {
+                cl = console.log;
+                $('*[id]').each(function(index, node) { window['$' + node.id] = $('#' + node.id); });
+                $load.click(function()
+                {
+                    D2S.load($selector, function(saveFile)
+                    {
+                        ff = saveFile;
+                        var appendInfo = function($element, info)
+                        {
+                            var $table;
+                            $element.html('').append(
+                                $table = $('<table/>').attr({border: 1, cellpadding: 2}).append(
+                                    $('<tr/>').append(
+                                        $('<th/>').css('width', 200).text('Name'),
+                                        $('<th/>').css('width', 480).text('Value')
+                                    )
+                                )
+                            );
+                            for (var i = 0, l = info.length; i < l; ++i)
+                            {
+                                var $td;
+                                $table.append(
+                                    $('<tr/>').append(
+                                        $('<td/>').text(info[i].name),
+                                        $td = $('<td/>')
+                                    )
+                                );
+                                if (info[i].isGroup)
+                                    appendInfo($td, info[i].value);
+                                else
+                                    if (info[i].value !== undefined && info[i].value !== null)
+                                        $td.text(info[i].value.push ? info[i].value.join(', ') : info[i].value);
+                            }
+                        };
+                        appendInfo($viewer, saveFile.info);
+                    });
+                });
+            });
+        </script>
+    </head><body>
+        <div id="banner">
+            <span>Diablo II Save File Reader</span>
+        </div>
+        <br>
+        <div id="browser">
+            <input id="selector" size="40" type="file">
+            <input id="load" value="Load" type="button">
+        </div>
+        <br>
+        <div id="viewer">
+            
+        </div>
+    </body></html>
